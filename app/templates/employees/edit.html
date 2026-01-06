@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-lg">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/employees/">Employees</a></li>
+                    <li class="breadcrumb-item"><a href="/employees/{{ employee.id }}">{{ employee.name }}</a></li>
+                    <li class="breadcrumb-item active">Edit</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-edit"></i> Edit Employee: {{ employee.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="needs-validation">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ employee.name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ employee.email }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ employee.phone or '' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="department" name="department" value="{{ employee.department }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="position" class="form-label">Position <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="position" name="position" value="{{ employee.position }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="salary" class="form-label">Salary (Monthly) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="salary" name="salary" step="0.01" value="{{ employee.salary }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="joining_date" class="form-label">Joining Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="joining_date" name="joining_date" value="{{ employee.joining_date.strftime('%Y-%m-%d') }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                                <select class="form-select" id="status" name="status" required>
+                                    <option value="Active" {% if employee.status == 'Active' %}selected{% endif %}>Active</option>
+                                    <option value="Inactive" {% if employee.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                                    <option value="On Leave" {% if employee.status == 'On Leave' %}selected{% endif %}>On Leave</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-end">
+                            <a href="/employees/{{ employee.id }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

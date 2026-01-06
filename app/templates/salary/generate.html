@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-lg">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/salary/">Salary</a></li>
+                    <li class="breadcrumb-item active">Generate</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> Generate Salary</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-4">
+                            <label for="month" class="form-label">Select Month <span class="text-danger">*</span></label>
+                            <input type="month" class="form-control" id="month" name="month" value="{{ current_month }}" required>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> <strong>Note:</strong> Only active employees will be included in salary generation. You can add allowances and deductions for each employee.
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Employee Name</th>
+                                        <th>Department</th>
+                                        <th>Basic Salary</th>
+                                        <th>Allowances</th>
+                                        <th>Deductions</th>
+                                        <th>Net Salary</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for employee in employees %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ employee.name }}</strong>
+                                        </td>
+                                        <td>{{ employee.department }}</td>
+                                        <td>₹{{ "%.2f" | format(employee.salary) }}</td>
+                                        <td>
+                                            <input type="number" step="0.01" name="allowances_{{ employee.id }}" class="form-control form-control-sm salary-input" data-basic="{{ employee.salary }}" data-employee-id="{{ employee.id }}" value="0" placeholder="0.00">
+                                        </td>
+                                        <td>
+                                            <input type="number" step="0.01" name="deductions_{{ employee.id }}" class="form-control form-control-sm salary-input" data-basic="{{ employee.salary }}" data-employee-id="{{ employee.id }}" value="0" placeholder="0.00">
+                                        </td>
+                                        <td>
+                                            <strong id="net_{{ employee.id }}">₹{{ "%.2f" | format(employee.salary) }}</strong>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-end mt-4">
+                            <a href="/salary/" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Generate Salary
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.salary-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const employeeId = this.getAttribute('data-employee-id');
+            const basicSalary = parseFloat(this.getAttribute('data-basic'));
+            const allowances = parseFloat(document.querySelector(`input[name="allowances_${employeeId}"]`).value || 0);
+            const deductions = parseFloat(document.querySelector(`input[name="deductions_${employeeId}"]`).value || 0);
+            const netSalary = basicSalary + allowances - deductions;
+            document.getElementById(`net_${employeeId}`).textContent = `₹${netSalary.toFixed(2)}`;
+        });
+    });
+</script>
+{% endblock %}
