@@ -70,7 +70,7 @@ python wsgi.py
 File: `d:\coding_projects\PYTHON\training\company_management_system\.env`
 
 ```
-DATABASE_URL=postgresql://neondb_owner:npg_ZJhTzKNtk7m4@ep-round-bread-a1gxfine-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+DATABASE_URL=Your database URL
 ```
 
 ---
@@ -168,10 +168,9 @@ channel_binding=require - Additional protection against MITM
 **Manual:**
 ```bash
 # Export data
-pg_dump postgresql://neondb_owner:npg_ZJhTzKNtk7m4@ep-round-bread-a1gxfine-pooler.ap-southeast-1.aws.neon.tech/neondb > backup.sql
-
+pg_dump Your NeonDB URL > backup.sql
 # Import data
-psql postgresql://neondb_owner:npg_ZJhTzKNtk7m4@ep-round-bread-a1gxfine-pooler.ap-southeast-1.aws.neon.tech/neondb < backup.sql
+psql Your NeonDB URL < backup.sql
 ```
 
 ### Monitoring
@@ -191,7 +190,7 @@ When deploying to Render:
 
 1. **Set Environment Variable:**
    ```
-   DATABASE_URL=postgresql://neondb_owner:npg_ZJhTzKNtk7m4@ep-round-bread-a1gxfine-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+   DATABASE_URL=Your NeonDB URL
    ```
 
 2. **Same Database Access:**
@@ -263,7 +262,7 @@ Check: Correct database/user
 
 **Connect via psql:**
 ```bash
-psql postgresql://neondb_owner:npg_ZJhTzKNtk7m4@ep-round-bread-a1gxfine-pooler.ap-southeast-1.aws.neon.tech/neondb
+psql Your NeonDB URL
 ```
 
 **List tables:**
