@@ -699,3 +699,43 @@ def api_department_insights(department):
         error_details = traceback.format_exc()
         print(f'Error in department insights: {error_details}')
         return jsonify({'error': f'Server error: {str(e)}'}), 500
+
+
+# ==================== ANALYTICS PAGE & API ====================
+@main_bp.route('/analytics')
+@login_required
+def analytics_page():
+    """Render the analytics dashboard page (secured)."""
+    # Pass available departments to the template for selection
+    departments = [d[0] for d in db.session.query(Employee.department).distinct().all()]
+    return render_template('analytics.html', departments=departments)
+
+
+@main_bp.route('/api/analytics/overview')
+@login_required
+def api_analytics_overview():
+    """Return traditional analytics: counts and avg salary per department."""
+    try:
+        # Employees per department
+        dept_counts = db.session.query(Employee.department, func.count(Employee.id)).group_by(Employee.department).all()
+        # Avg salary per department
+        dept_avg_salary = db.session.query(Employee.department, func.avg(Employee.salary)).group_by(Employee.department).all()
+
+        # Build dicts
+        counts = {d: int(c) for d, c in dept_counts}
+        avg_salary = {d: float(round(s or 0, 2)) for d, s in dept_avg_salary}
+
+        # Recent attendance by department (last 30 days)
+        last_30 = date.today() - timedelta(days=30)
+        attendance_rows = db.session.query(Employee.department, func.count(Attendance.id)).join(Attendance, Employee.id == Attendance.employee_id).filter(Attendance.date >= last_30, Attendance.status == 'Present').group_by(Employee.department).all()
+        attendance = {d: int(c) for d, c in attendance_rows}
+
+        return jsonify({
+            'counts': counts,
+            'avg_salary': avg_salary,
+            'attendance': attendance
+        })
+    except Exception as e:
+        import traceback
+        print(f'Error in analytics overview: {traceback.format_exc()}')
+        return jsonify({'error': str(e)}), 500

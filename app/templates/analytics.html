@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}Analytics Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Analytics Dashboard</h2>
+  <p class="text-muted">Traditional analytics + AI insights (secured).</p>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Overview</h5>
+          <canvas id="deptCountChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Average Salary by Department</h5>
+          <canvas id="avgSalaryChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Attendance (last 30 days)</h5>
+          <canvas id="attendanceChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">AI Department Insight</h5>
+          <div class="mb-2">
+            <label for="deptSelect">Select Department</label>
+            <select id="deptSelect" class="form-select">
+              <option value="">-- select --</option>
+              {% for d in departments %}
+                <option value="{{ d }}">{{ d }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div id="aiInsight" class="p-2" style="min-height:120px; background:#f8f9fa; border-radius:6px;">
+            <em>Select a department to fetch AI insight.</em>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+async function fetchOverview(){
+  const res = await fetch('/api/analytics/overview');
+  if(!res.ok){
+    console.error('Failed to fetch overview', await res.text());
+    return null;
+  }
+  return res.json();
+}
+
+function renderBar(ctx, labels, data, label){
+  return new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [{ label, data, backgroundColor: 'rgba(54,162,235,0.6)'}]},
+    options: { responsive: true }
+  });
+}
+
+function renderLine(ctx, labels, data, label){
+  return new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [{ label, data, borderColor: 'rgba(75,192,192,1)', fill:false}]},
+    options: { responsive: true }
+  });
+}
+
+async function init(){
+  const overview = await fetchOverview();
+  if(!overview) return;
+
+  const depts = Object.keys(overview.counts || {});
+  const counts = depts.map(d=>overview.counts[d]||0);
+  const salaries = depts.map(d=>overview.avg_salary[d]||0);
+  const attendance = depts.map(d=>overview.attendance[d]||0);
+
+  const ctx1 = document.getElementById('deptCountChart').getContext('2d');
+  renderBar(ctx1, depts, counts, 'Employees');
+
+  const ctx2 = document.getElementById('avgSalaryChart').getContext('2d');
+  renderBar(ctx2, depts, salaries, 'Avg Salary');
+
+  const ctx3 = document.getElementById('attendanceChart').getContext('2d');
+  renderLine(ctx3, depts, attendance, 'Present (last 30d)');
+}
+
+async function fetchAIInsight(dept){
+  const container = document.getElementById('aiInsight');
+  container.innerHTML = '<em>Loading AI insight…</em>';
+  try{
+    const res = await fetch(`/api/ai/department-insights/${encodeURIComponent(dept)}`);
+    if(!res.ok){
+      const text = await res.text();
+      container.innerHTML = `<div class="text-danger">Error fetching AI insight: ${text}</div>`;
+      return;
+    }
+    const data = await res.json();
+    container.innerText = data.insight || data.error || 'No insight available.';
+  } catch(e){
+    container.innerHTML = `<div class="text-danger">${e.toString()}</div>`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  init();
+  document.getElementById('deptSelect').addEventListener('change', (e)=>{
+    const v = e.target.value;
+    if(v) fetchAIInsight(v);
+    else document.getElementById('aiInsight').innerHTML = '<em>Select a department to fetch AI insight.</em>';
+  });
+});
+</script>
+
+{% endblock %}
