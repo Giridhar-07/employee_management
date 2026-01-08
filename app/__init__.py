@@ -6,6 +6,10 @@ from app.config import config
 import os
 import logging
 
+# Load environment variables at module level
+from dotenv import load_dotenv
+load_dotenv()
+
 def create_app(config_name=None):
     """Application factory function"""
     if config_name is None:
@@ -41,6 +45,15 @@ def create_app(config_name=None):
     app.register_blueprint(employee_bp, url_prefix='/employees')
     app.register_blueprint(attendance_bp, url_prefix='/attendance')
     app.register_blueprint(salary_bp, url_prefix='/salary')
+    
+    # Initialize AI client at startup to cache it
+    with app.app_context():
+        from app.ai_service import get_ai_client
+        ai_client = get_ai_client()
+        if ai_client:
+            app.logger.info("✓ AI service initialized successfully")
+        else:
+            app.logger.warning("⚠ AI service not available - check OPENROUTER_API_KEY")
     
     # Error handlers
     @app.errorhandler(404)
