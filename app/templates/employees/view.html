@@ -1,6 +1,61 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    .ai-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .ai-card:nth-child(2) {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .ai-card:nth-child(3) {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .ai-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .ai-card-header {
+        border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 15px 20px;
+        font-weight: 600;
+    }
+    
+    .ai-card-body {
+        padding: 20px;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+    
+    .ai-loader {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .ai-icon {
+        font-size: 24px;
+        margin-right: 10px;
+    }
+</style>
+
 <div class="container-lg">
     <div class="row mb-4">
         <div class="col-12">
@@ -195,6 +250,57 @@
         </div>
     </div>
 
+    <!-- AI Insights Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3"><i class="fas fa-robot"></i> AI-Powered Insights</h4>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <!-- Salary Analysis Card -->
+        <div class="col-lg-4 mb-3">
+            <div class="card ai-card">
+                <div class="ai-card-header">
+                    <i class="fas fa-brain ai-icon"></i>Salary Analysis
+                </div>
+                <div class="ai-card-body" id="salary-insight">
+                    <div class="text-center">
+                        <div class="ai-loader"></div> Loading AI analysis...
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Card -->
+        <div class="col-lg-4 mb-3">
+            <div class="card ai-card">
+                <div class="ai-card-header">
+                    <i class="fas fa-star ai-icon"></i>Performance Insight
+                </div>
+                <div class="ai-card-body" id="performance-insight">
+                    <div class="text-center">
+                        <div class="ai-loader"></div> Loading AI analysis...
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Attendance Card -->
+        <div class="col-lg-4 mb-3">
+            <div class="card ai-card">
+                <div class="ai-card-header">
+                    <i class="fas fa-chart-line ai-icon"></i>Attendance Analysis
+                </div>
+                <div class="ai-card-body" id="attendance-insight">
+                    <div class="text-center">
+                        <div class="ai-loader"></div> Loading AI analysis...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Back Button -->
     <div class="row">
         <div class="col-12">
@@ -204,4 +310,53 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Load AI insights asynchronously
+    async function loadAIInsights() {
+        const employeeId = {{ employee.id }};
+        
+        // Salary Recommendation
+        fetch(`/api/ai/salary-recommendation/${employeeId}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('salary-insight').innerHTML = 
+                    data.recommendation || 'Unable to load recommendation.';
+            })
+            .catch(err => {
+                console.error('Error loading salary insight:', err);
+                document.getElementById('salary-insight').innerHTML = 
+                    'Error loading AI insight. Please try again.';
+            });
+        
+        // Performance Insight
+        fetch(`/api/ai/performance-insight/${employeeId}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('performance-insight').innerHTML = 
+                    data.insight || 'Unable to load insight.';
+            })
+            .catch(err => {
+                console.error('Error loading performance insight:', err);
+                document.getElementById('performance-insight').innerHTML = 
+                    'Error loading AI insight. Please try again.';
+            });
+        
+        // Attendance Analysis
+        fetch(`/api/ai/attendance-analysis/${employeeId}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('attendance-insight').innerHTML = 
+                    data.analysis || 'Unable to load analysis.';
+            })
+            .catch(err => {
+                console.error('Error loading attendance insight:', err);
+                document.getElementById('attendance-insight').innerHTML = 
+                    'Error loading AI insight. Please try again.';
+            });
+    }
+    
+    // Load insights when page loads
+    document.addEventListener('DOMContentLoaded', loadAIInsights);
+</script>
 {% endblock %}

@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash, g
 from datetime import datetime, date, timedelta
 from app.models import db, Employee, Attendance, SalaryRecord
+from app.auth import login_required
 from sqlalchemy import and_, or_, func
 import csv
 from io import StringIO
@@ -14,6 +15,7 @@ salary_bp = Blueprint('salary', __name__)
 
 # ==================== MAIN ROUTES ====================
 @main_bp.route('/')
+@login_required
 def index():
     """Dashboard with statistics"""
     total_employees = Employee.query.count()
@@ -35,6 +37,7 @@ def index():
 
 
 @main_bp.route('/about')
+@login_required
 def about():
     """About page"""
     return render_template('about.html')
@@ -42,6 +45,7 @@ def about():
 
 # ==================== EMPLOYEE ROUTES ====================
 @employee_bp.route('/')
+@login_required
 def list_employees():
     """List all employees with search and filter"""
     page = request.args.get('page', 1, type=int)
@@ -94,6 +98,7 @@ def list_employees():
 
 
 @employee_bp.route('/add', methods=['GET', 'POST'])
+@login_required
 def add_employee():
     """Add new employee"""
     if request.method == 'POST':
@@ -129,6 +134,7 @@ def add_employee():
 
 
 @employee_bp.route('/<int:employee_id>')
+@login_required
 def view_employee(employee_id):
     """View employee details"""
     employee = Employee.query.get_or_404(employee_id)
@@ -169,6 +175,7 @@ def view_employee(employee_id):
 
 
 @employee_bp.route('/<int:employee_id>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_employee(employee_id):
     """Edit employee"""
     employee = Employee.query.get_or_404(employee_id)
@@ -205,6 +212,7 @@ def edit_employee(employee_id):
 
 
 @employee_bp.route('/<int:employee_id>/delete', methods=['POST'])
+@login_required
 def delete_employee(employee_id):
     """Delete employee"""
     employee = Employee.query.get_or_404(employee_id)
@@ -222,6 +230,7 @@ def delete_employee(employee_id):
 
 
 @employee_bp.route('/export/csv')
+@login_required
 def export_csv():
     """Export employees to CSV"""
     from flask import make_response
@@ -253,6 +262,7 @@ def export_csv():
 
 # ======= Simple JSON API for real-time UI updates =======
 @main_bp.route('/api/employees')
+@login_required
 def api_employees():
     """Return a JSON list of recent employees"""
     employees = Employee.query.order_by(Employee.id.desc()).limit(100).all()
@@ -267,6 +277,7 @@ def api_employees():
 
 
 @main_bp.route('/api/stats')
+@login_required
 def api_stats():
     """Return simple statistics used by the dashboard"""
     total = Employee.query.count()
@@ -284,6 +295,7 @@ def api_stats():
 
 # ==================== ATTENDANCE ROUTES ====================
 @attendance_bp.route('/')
+@login_required
 def attendance_list():
     """View attendance records"""
     page = request.args.get('page', 1, type=int)
@@ -324,6 +336,7 @@ def attendance_list():
 
 
 @attendance_bp.route('/mark', methods=['GET', 'POST'])
+@login_required
 def mark_attendance():
     """Mark attendance for employees"""
     if request.method == 'POST':
@@ -368,6 +381,7 @@ def mark_attendance():
 
 
 @attendance_bp.route('/bulk-mark', methods=['GET', 'POST'])
+@login_required
 def bulk_mark_attendance():
     """Mark attendance for multiple employees at once"""
     if request.method == 'POST':
@@ -415,6 +429,7 @@ def bulk_mark_attendance():
 
 # ==================== SALARY ROUTES ====================
 @salary_bp.route('/')
+@login_required
 def salary_list():
     """View salary records"""
     page = request.args.get('page', 1, type=int)
@@ -449,6 +464,7 @@ def salary_list():
 
 
 @salary_bp.route('/generate', methods=['GET', 'POST'])
+@login_required
 def generate_salary():
     """Generate salary for a month"""
     if request.method == 'POST':
@@ -497,6 +513,7 @@ def generate_salary():
 
 
 @salary_bp.route('/<int:salary_id>/mark-paid', methods=['POST'])
+@login_required
 def mark_salary_paid(salary_id):
     """Mark salary as paid"""
     salary = SalaryRecord.query.get_or_404(salary_id)
@@ -517,6 +534,7 @@ def mark_salary_paid(salary_id):
 from app.ai_service import get_ai_client
 
 @main_bp.route('/api/ai/salary-recommendation/<int:employee_id>')
+@login_required
 def api_salary_recommendation(employee_id):
     """Get AI salary recommendation for an employee"""
     employee = Employee.query.get_or_404(employee_id)
@@ -543,6 +561,7 @@ def api_salary_recommendation(employee_id):
 
 
 @main_bp.route('/api/ai/performance-insight/<int:employee_id>')
+@login_required
 def api_performance_insight(employee_id):
     """Get AI performance insight for an employee"""
     employee = Employee.query.get_or_404(employee_id)
@@ -584,6 +603,7 @@ def api_performance_insight(employee_id):
 
 
 @main_bp.route('/api/ai/attendance-analysis/<int:employee_id>')
+@login_required
 def api_attendance_analysis(employee_id):
     """Get AI attendance analysis"""
     employee = Employee.query.get_or_404(employee_id)
@@ -618,6 +638,7 @@ def api_attendance_analysis(employee_id):
 
 
 @main_bp.route('/api/ai/department-insights/<department>')
+@login_required
 def api_department_insights(department):
     """Get AI insights for a department"""
     ai = get_ai_client()

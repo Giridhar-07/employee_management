@@ -165,6 +165,37 @@
             text-align: center;
             margin-top: 40px;
         }
+        
+        .navbar-admin {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .admin-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-logout {
+            background: rgba(231, 76, 60, 0.9);
+            border: none;
+            padding: 6px 15px;
+            border-radius: 5px;
+            color: white;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-logout:hover {
+            background: #e74c3c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+            color: white;
+            text-decoration: none;
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -220,6 +251,16 @@
                             <i class="fas fa-info-circle"></i> About
                         </a>
                     </li>
+                    {% if g.admin %}
+                    <li class="nav-item navbar-admin">
+                        <span class="admin-badge">
+                            <i class="fas fa-user-shield"></i> {{ g.admin.full_name or g.admin.username }}
+                        </span>
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-logout">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

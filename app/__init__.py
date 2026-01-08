@@ -31,6 +31,12 @@ def create_app(config_name=None):
     
     # Register blueprints
     from app.routes import main_bp, employee_bp, attendance_bp, salary_bp
+    from app.auth import auth_bp
+    
+    # Auth blueprint first (so login is accessible without auth)
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    
+    # Other blueprints
     app.register_blueprint(main_bp)
     app.register_blueprint(employee_bp, url_prefix='/employees')
     app.register_blueprint(attendance_bp, url_prefix='/attendance')
