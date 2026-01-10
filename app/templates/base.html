@@ -8,194 +8,91 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
+            --primary-color: #1f2a44;
+            --secondary-color: #4f9bd8;
+            --muted-bg: #f4f6f8;
+            --accent: #6f9bde;
             --success-color: #27ae60;
             --danger-color: #e74c3c;
-            --warning-color: #f39c12;
+            --radius: 10px;
+            --gap: 1rem;
         }
         
+        /* Base */
+        html, body { height: 100%; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ecf0f1;
+            font-family: Inter, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--muted-bg);
+            color: #263241;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            margin: 0;
         }
-        
+
+        /* Navbar */
         .navbar {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 6px 18px rgba(31, 42, 68, 0.12);
+            padding-top: .5rem;
+            padding-bottom: .5rem;
         }
-        
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-        
-        .sidebar {
-            background: var(--primary-color);
-            color: white;
-            min-height: calc(100vh - 70px);
-            padding: 20px 0;
-        }
-        
-        .sidebar a {
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            padding: 12px 20px;
-            display: block;
-            transition: all 0.3s;
-            border-left: 3px solid transparent;
-        }
-        
-        .sidebar a:hover,
-        .sidebar a.active {
-            background-color: var(--secondary-color);
-            color: white;
-            border-left-color: white;
-        }
-        
-        .main-content {
-            padding: 30px;
-        }
-        
+
+        .navbar-brand { font-weight: 700; font-size: 1.25rem; color: #fff; }
+        .navbar .nav-link { color: rgba(255,255,255,0.95); }
+        .navbar .nav-link:hover { color: #fff; opacity: .95; }
+
+        /* Main content spacing */
+        .main-content { padding: calc(var(--gap) * 2); }
+
+        /* Cards */
         .card {
             border: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            margin-bottom: 20px;
-            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: var(--radius);
+            box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+            transition: transform .18s ease, box-shadow .18s ease;
         }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        .card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(16,24,40,0.08); }
+        .card-header { background: transparent; border-bottom: none; padding-bottom: 0; }
+
+        /* Stat cards */
+        .stat-card { padding: 28px 20px; text-align: left; }
+        .stat-number { font-size: 1.9rem; font-weight: 700; color: var(--primary-color); }
+        .stat-label { color: #6b7280; font-size: .9rem; }
+
+        /* Buttons & form controls */
+        .btn-primary { background-color: var(--secondary-color); border-color: var(--secondary-color); border-radius: 8px; }
+        .btn-primary:focus, .btn-primary:hover { background-color: var(--accent); border-color: var(--accent); }
+        .form-control, .form-select { border-radius: 8px; }
+        .form-control:focus, .form-select:focus { box-shadow: 0 6px 20px rgba(79,155,216,0.12); border-color: var(--secondary-color); }
+
+        /* Tables */
+        .table { background: #fff; border-radius: 8px; overflow: hidden; }
+        .table thead th { background: rgba(31,42,68,0.95); color: #fff; border: none; }
+        .table tbody tr:nth-child(odd) { background: #ffffff; }
+        .table tbody tr:nth-child(even) { background: #fbfdff; }
+
+        /* Badges */
+        .badge { border-radius: 999px; padding: .4rem .7rem; font-size: .8rem; }
+
+        /* Alerts */
+        .alert { border-radius: 8px; }
+
+        /* Footer */
+        footer { background: transparent; color: #6b7280; padding: 28px 0; text-align: center; }
+
+        /* Admin badge and logout */
+        .navbar-admin { display:flex; align-items:center; gap:.6rem; }
+        .admin-badge { background: rgba(255,255,255,0.08); padding: 6px 12px; border-radius: 999px; color: #fff; }
+        .btn-logout { border-radius: 8px; padding: 6px 12px; }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .main-content { padding: 1rem; }
+            .navbar-brand { font-size: 1rem; }
         }
-        
-        .card-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            border: none;
-        }
-        
-        .stat-card {
-            text-align: center;
-            padding: 30px;
-        }
-        
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--secondary-color);
-        }
-        
-        .stat-label {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            margin-top: 10px;
-        }
-        
-        .btn-primary {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-        
-        .btn-primary:hover {
-            background-color: #2980b9;
-            border-color: #2980b9;
-        }
-        
-        .table {
-            background-color: white;
-        }
-        
-        .table thead {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .table tbody tr {
-            transition: background-color 0.2s;
-        }
-        
-        .table tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-        
-        .badge {
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-        }
-        
-        .badge-active {
-            background-color: var(--success-color);
-        }
-        
-        .badge-inactive {
-            background-color: #95a5a6;
-        }
-        
-        .badge-pending {
-            background-color: var(--warning-color);
-        }
-        
-        .badge-paid {
-            background-color: var(--success-color);
-        }
-        
-        .form-control:focus,
-        .form-select:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-        }
-        
-        .alert {
-            border: none;
-            border-radius: 8px;
-        }
-        
-        .breadcrumb {
-            background-color: transparent;
-            margin-bottom: 20px;
-        }
-        
-        footer {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            margin-top: 40px;
-        }
-        
-        .navbar-admin {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .admin-badge {
-            background: rgba(255,255,255,0.2);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
-        
-        .btn-logout {
-            background: rgba(231, 76, 60, 0.9);
-            border: none;
-            padding: 6px 15px;
-            border-radius: 5px;
-            color: white;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-        
-        .btn-logout:hover {
-            background: #e74c3c;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
-            color: white;
-            text-decoration: none;
-        }
+
+        /* Small utility tweaks */
+        .muted { color: #6b7280; }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
